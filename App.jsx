@@ -1810,3 +1810,4 @@ ABermud - Sistema de Inventario y Ventas
 };
 
 export default ABermudApp;
+Eliminar App.jsx
