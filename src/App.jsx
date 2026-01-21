@@ -1755,7 +1755,9 @@ ABermud - Sistema de Inventario y Ventas
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <img src="https://raw.githubusercontent.com/abermudinventario-tech/abermud-app/main/src/logo_ABermud.jpg" alt="ABermud Logo" className="w-10 h-10 rounded-full object-cover" />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-lg">AB</span>
+            </div>                
             <p className="text-sm text-gray-600">Sistema de Inventario y Ventas</p>
           </div>
         </div><img src={`${window.location.origin}/src/logo_ABermud.jpg`} alt="ABermud Logo" className="w-10 h-10 rounded-full object-cover" />
