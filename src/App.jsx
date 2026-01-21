@@ -1758,7 +1758,7 @@ ABermud - Sistema de Inventario y Ventas
               <img src="/src/logo_ABermud.jpg" alt="ABermud Logo" className="w-10 h-10 rounded-full object-cover" />
             <p className="text-sm text-gray-600">Sistema de Inventario y Ventas</p>
           </div>
-        </div>
+        </div><img src={`${window.location.origin}/src/logo_ABermud.jpg`} alt="ABermud Logo" className="w-10 h-10 rounded-full object-cover" />
       </div>
 
       <div className="bg-white shadow">
