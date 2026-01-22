@@ -1770,3 +1770,4 @@ ${sale.items.map(item => `• ${item.modelo} ${item.color || ''} ${item.talla ||
 
 
 export default App;
+
