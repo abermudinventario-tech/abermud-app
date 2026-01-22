@@ -25,24 +25,24 @@ const ABermudApp = () => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+  const loadData = () => {
     try {
       setLoading(true);
       try {
-        const productsData = await window.storage.get('abermud-products');
-        setProducts(productsData ? JSON.parse(productsData.value) : []);
+        const productsData = localStorage.getItem('abermud-products');
+        setProducts(productsData ? JSON.parse(productsData) : []);
       } catch (error) {
         setProducts([]);
       }
       try {
-        const clientsData = await window.storage.get('abermud-clients');
-        setClients(clientsData ? JSON.parse(clientsData.value) : []);
+        const clientsData = localStorage.getItem('abermud-clients');
+        setClients(clientsData ? JSON.parse(clientsData) : []);
       } catch (error) {
         setClients([]);
       }
       try {
-        const salesData = await window.storage.get('abermud-sales');
-        setSales(salesData ? JSON.parse(salesData.value) : []);
+        const salesData = localStorage.getItem('abermud-sales');
+        setSales(salesData ? JSON.parse(salesData) : []);
       } catch (error) {
         setSales([]);
       }
@@ -53,9 +53,9 @@ const ABermudApp = () => {
     }
   };
 
-  const saveProducts = async (newProducts) => {
+  const saveProducts = (newProducts) => {
     try {
-      await window.storage.set('abermud-products', JSON.stringify(newProducts), false);
+      localStorage.setItem('abermud-products', JSON.stringify(newProducts));
       setProducts(newProducts);
     } catch (error) {
       console.error('Error al guardar productos:', error);
@@ -63,9 +63,9 @@ const ABermudApp = () => {
     }
   };
 
-  const saveClients = async (newClients) => {
+  const saveClients = (newClients) => {
     try {
-      await window.storage.set('abermud-clients', JSON.stringify(newClients), false);
+      localStorage.setItem('abermud-clients', JSON.stringify(newClients));
       setClients(newClients);
     } catch (error) {
       console.error('Error al guardar clientes:', error);
@@ -73,9 +73,9 @@ const ABermudApp = () => {
     }
   };
 
-  const saveSales = async (newSales) => {
+  const saveSales = (newSales) => {
     try {
-      await window.storage.set('abermud-sales', JSON.stringify(newSales), false);
+      localStorage.setItem('abermud-sales', JSON.stringify(newSales));
       setSales(newSales);
     } catch (error) {
       console.error('Error al guardar ventas:', error);
