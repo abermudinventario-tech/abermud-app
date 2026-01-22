@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import logoABermud from './logo_ABermud.jpg';
+import logoABermud from './logo_Abermud.jpg';
 
 function App() {
   // Estado principal
