@@ -503,7 +503,7 @@ function App() {
     doc.setFont(undefined, 'italic');
     doc.text('Lo bueno va contigo', 105, finalY + 35, { align: 'center' });
     doc.setFont(undefined, 'normal');
-    doc.text('ABermud - Wholesale Fashion', 105, finalY + 41, { align: 'center' });
+    doc.text('ABermud', 105, finalY + 41, { align: 'center' });
 
     return doc;
   };
@@ -774,10 +774,7 @@ function App() {
 
             <div className="hidden md:flex items-center space-x-6">
               <div className="text-right">
-                <p className="text-xs text-gray-400">Capital</p>
-                <p className="text-lg font-bold text-white">S/ {stats.totalValue.toFixed(2)}</p>
               </div>
-              <div className="w-px h-10 bg-gray-700"></div>
               <div className="text-right">
                 <p className="text-xs text-emerald-400">Ingresos</p>
                 <p className="text-lg font-bold text-emerald-400">S/ {stats.totalRevenue.toFixed(2)}</p>
@@ -946,7 +943,7 @@ function App() {
                           BAJO ({stats.lowStock} productos)
                         </h3>
                         <div className="space-y-2">
-                          {products.filter(p => p.stock > 0 && p.stock < 5).slice(0, 3).map(product => (
+                          {products.filter(p => p.stock > 0 && p.stock < 10).slice(0, 3).map(product => (
                             <div key={product.id} className="flex items-center justify-between bg-white rounded-lg p-3">
                               <div>
                                 <p className="font-medium text-gray-900">{product.modelo}</p>
