@@ -500,13 +500,18 @@ function App() {
     
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(9);
-    doc.setFont(undefined, 'italic');
-    doc.text('Lo bueno va contigo', 105, finalY + 35, { align: 'center' });
     doc.setFont(undefined, 'normal');
-    doc.text('ABermud', 105, finalY + 41, { align: 'center' });
+    doc.text('Gracias por su compra', 105, finalY + 35, { align: 'center' });
 
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'bold');
+    doc.text('ABermud', 105, finalY + 43, { align: 'center' });
+
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'italic');
+    doc.text('Lo bueno va contigo', 105, finalY + 50, { align: 'center' });
     return doc;
-  };
+    };
 
   const downloadOrderNote = (sale) => {
     const doc = generateOrderNote(sale);
@@ -732,7 +737,7 @@ function App() {
     totalClients: clients.length,
     totalSales: sales.length,
     totalRevenue: sales.reduce((sum, s) => sum + s.total, 0),
-    lowStock: products.filter(p => p.stock < 5).length,
+    lowStock: products.filter(p => p.stock < 10).length,
     outOfStock: products.filter(p => p.stock === 0).length
   };
 
