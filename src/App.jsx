@@ -519,12 +519,17 @@ function App() {
   };
 
   const shareOrderViaWhatsApp = (sale) => {
-    const message = `🛍️ *PEDIDO ABermud*\n\n📋 Pedido #${sale.orderNumber}\n👤 Cliente: ${sale.clientName}\n📅 Fecha: ${new Date(sale.date).toLocaleDateString('es-PE')}\n\n📦 *Productos:*\n${sale.items.map(item => `• ${item.modelo} x${item.quantity}`).join('\n')}\n\n💰 *Total: S/ ${sale.total.toFixed(2)}*\n\n¡Gracias por tu compra! 🎉`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${sale.clientPhone?.replace(/\D/g, '')}?text=${encodedMessage}`;
-    
+    // Primero generar y descargar el PDF
+    const doc = generateOrderNote(sale);
+    doc.save(`Pedido_${sale.orderNumber || sale.id}_${sale.clientName}.pdf`);
+  
+    // Luego abrir WhatsApp sin mensaje
+    const whatsappUrl = `https://wa.me/${sale.clientPhone?.replace(/\D/g, '')}`;
+  
     window.open(whatsappUrl, '_blank');
+  
+    alert('PDF descargado. Por favor, adjunta el archivo en WhatsApp.');  
+  };
   };
 
   const generateStockPDF = () => {
