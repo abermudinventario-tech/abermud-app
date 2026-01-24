@@ -653,7 +653,7 @@ function App() {
           fillColor: [0, 0, 0],
           textColor: [255, 255, 255],
           fontStyle: 'bold',
-          fontSize: 8
+          fontSize: 8,
 		  halign: 'center'
         },
         bodyStyles: { fontSize: 8 },
