@@ -65,8 +65,8 @@ function App() {
   
   // Estados para selección de productos
   const [selectedProductModel, setSelectedProductModel] = useState(null);
-  const [selectedTalla, setSelectedTalla] = useState(null);
-  const [colorQuantities, setColorQuantities] = useState({});
+  const [selectedTallas, setSelectedTallas] = useState([]); // Array ahora
+  const [colorQuantitiesByTalla, setColorQuantitiesByTalla] = useState({}); // Objeto con tallas
 
   // Estados para filtros de reportes
   const [reportFilter, setReportFilter] = useState('hoy');
@@ -318,28 +318,34 @@ function App() {
 
   const addToCart = () => {
     const newItems = [];
-    Object.keys(colorQuantities).forEach(color => {
-      const quantity = parseInt(colorQuantities[color]);
-      if (quantity > 0) {
-        const product = products.find(p => 
-          p.modelo === selectedProductModel.modelo && 
-          p.talla === selectedTalla && 
-          p.color === color
-        );
-        if (product && quantity <= product.stock) {
-          newItems.push({
-            ...product,
-            quantity
-          });
+  
+    // Iterar por cada talla seleccionada
+    Object.keys(colorQuantitiesByTalla).forEach(talla => {
+      const colorsForTalla = colorQuantitiesByTalla[talla];
+    
+      Object.keys(colorsForTalla).forEach(color => {
+        const quantity = parseInt(colorsForTalla[color]);
+        if (quantity > 0) {
+          const product = products.find(p => 
+            p.modelo === selectedProductModel.modelo && 
+            p.talla === talla && 
+            p.color === color
+          );
+          if (product && quantity <= product.stock) {
+            newItems.push({
+              ...product,
+              quantity
+            });
+          }
         }
-      }
+      });
     });
 
     if (newItems.length > 0) {
       setCart([...cart, ...newItems]);
       setSelectedProductModel(null);
-      setSelectedTalla(null);
-      setColorQuantities({});
+      setSelectedTallas([]);
+      setColorQuantitiesByTalla({});
     }
   };
 
@@ -437,12 +443,13 @@ function App() {
     today.setHours(0, 0, 0, 0);
 
     return sales.filter(sale => {
-      const saleDate = new Date(sale.date);
-      saleDate.setHours(0, 0, 0, 0);
+      // Comparar directamente los strings de fecha
+	  const saleDateString = sale.date; // Ya es string "2026-01-24"
+      const todayString = today.toISOString().split('T')[0];
 
       switch(reportFilter) {
         case 'hoy':
-          return saleDate.getTime() === today.getTime();
+          return saleDateString === todayString;
         case 'semana':
           const weekAgo = new Date(today);
           weekAgo.setDate(weekAgo.getDate() - 7);
@@ -745,27 +752,45 @@ function App() {
       doc.text(modelo, 20, yPosition);
       yPosition += 6;
 
-      const tallasData = [
-        ['S', Array.from(modeloMap[modelo].S).join(', ') || '-'],
-        ['M', Array.from(modeloMap[modelo].M).join(', ') || '-'],
-        ['L', Array.from(modeloMap[modelo].L).join(', ') || '-'],
-        ['XL', Array.from(modeloMap[modelo].XL).join(', ') || '-']
-      ];
+      // Preparar colores por talla
+const tallasArray = ['S', 'M', 'L', 'XL'];
+const coloresPorTalla = {};
 
-      doc.autoTable({
-        startY: yPosition,
-        body: tallasData,
-        theme: 'grid',
-        headStyles: { 
-          fillColor: [0, 0, 0]
-        },
-        columnStyles: {
-          0: { cellWidth: 30, fontStyle: 'bold', halign: 'center' },
-          1: { cellWidth: 140 }
-        },
-        bodyStyles: { fontSize: 9 },
-        margin: { left: 20 }
-      });
+tallasArray.forEach(talla => {
+  coloresPorTalla[talla] = Array.from(modeloMap[modelo][talla]);
+});
+
+// Encontrar el máximo número de colores
+const maxColors = Math.max(...tallasArray.map(t => coloresPorTalla[t].length));
+
+// Crear filas de la tabla (cada fila es un índice de color)
+const tableData = [];
+for (let i = 0; i < maxColors; i++) {
+  const row = tallasArray.map(talla => coloresPorTalla[talla][i] || '-');
+  tableData.push(row);
+}
+
+doc.autoTable({
+  startY: yPosition,
+  head: [tallasArray], // S, M, L, XL como headers
+  body: tableData,
+  theme: 'grid',
+  headStyles: { 
+    fillColor: [0, 0, 0],
+    textColor: [255, 255, 255],
+    fontStyle: 'bold',
+    halign: 'center',
+    fontSize: 9
+  },
+  columnStyles: {
+    0: { cellWidth: 35, halign: 'center' },
+    1: { cellWidth: 35, halign: 'center' },
+    2: { cellWidth: 35, halign: 'center' },
+    3: { cellWidth: 35, halign: 'center' }
+  },
+  bodyStyles: { fontSize: 8, halign: 'center' },
+  margin: { left: 20 }
+});
 
       yPosition = doc.lastAutoTable.finalY + 8;
     });
@@ -1268,10 +1293,47 @@ function App() {
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="px-4 py-2 text-sm font-medium text-black">{item.modelo}</td>
                         <td className="px-4 py-2 text-sm text-gray-600">{item.color}</td>
-                        <td className="px-4 py-2 text-sm text-center">{item.sizes['S'] || 0}</td>
-                        <td className="px-4 py-2 text-sm text-center">{item.sizes['M'] || 0}</td>
-                        <td className="px-4 py-2 text-sm text-center">{item.sizes['L'] || 0}</td>
-                        <td className="px-4 py-2 text-sm text-center">{item.sizes['XL'] || 0}</td>
+                        <td className="px-4 py-2 text-sm text-center">
+  						  <span className={`font-bold ${
+   						    (item.sizes['S'] || 0) >= 10 ? 'text-green-600' : 
+   						    (item.sizes['S'] || 0) >= 6 ? 'text-yellow-600' : 
+    			            'text-red-600'
+  						  }`}>
+   						    {item.sizes['S'] || 0}
+ 						  </span>
+						</td>
+                        {/* M */}
+						<td className="px-4 py-2 text-sm text-center">
+  						  <span className={`font-bold ${
+    						(item.sizes['M'] || 0) >= 10 ? 'text-green-600' : 
+   							(item.sizes['M'] || 0) >= 6 ? 'text-yellow-600' : 
+   						    'text-red-600'
+  						  }`}>
+   						    {item.sizes['M'] || 0}
+ 						  </span>
+						</td>
+
+						{/* L */}
+						<td className="px-4 py-2 text-sm text-center">
+  						  <span className={`font-bold ${
+   					        (item.sizes['L'] || 0) >= 10 ? 'text-green-600' : 
+   						    (item.sizes['L'] || 0) >= 6 ? 'text-yellow-600' : 
+   					        'text-red-600'
+						  }`}>
+    						{item.sizes['L'] || 0}
+						  </span>
+						</td>
+
+						{/* XL */}
+						<td className="px-4 py-2 text-sm text-center">
+  						  <span className={`font-bold ${
+   						    (item.sizes['XL'] || 0) >= 10 ? 'text-green-600' : 
+   						    (item.sizes['XL'] || 0) >= 6 ? 'text-yellow-600' : 
+   					        'text-red-600'
+				          }`}>
+    					    {item.sizes['XL'] || 0}
+						  </span>
+						</td>
                         <td className="px-4 py-2 text-xs text-gray-500">
                           {item.lastUpdate ? new Date(item.lastUpdate).toLocaleDateString('es-PE') : '-'}
                         </td>
