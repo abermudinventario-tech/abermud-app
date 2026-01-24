@@ -772,8 +772,7 @@ function App() {
 
     doc.setTextColor(255, 0, 0);
     doc.setFontSize(8);
-    doc.text('*Para los clientes, por eso no se incluye unid. Disponible', 20, yPosition + 5);
-
+    
     doc.save(`ABermud_Stock_Clientes_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
