@@ -65,9 +65,8 @@ function App() {
   
   // Estados para selección de productos
   const [selectedProductModel, setSelectedProductModel] = useState(null);
-  const [selectedTallas, setSelectedTallas] = useState([]); // Array ahora
-  const [colorQuantitiesByTalla, setColorQuantitiesByTalla] = useState({}); // Objeto con tallas
-
+  const [selectedTalla, setSelectedTalla] = useState(null);
+  const [colorQuantities, setColorQuantities] = useState({});
   // Estados para filtros de reportes
   const [reportFilter, setReportFilter] = useState('hoy');
   const [customDateRange, setCustomDateRange] = useState({
@@ -317,38 +316,32 @@ function App() {
   };
 
   const addToCart = () => {
-    const newItems = [];
-  
-    // Iterar por cada talla seleccionada
-    Object.keys(colorQuantitiesByTalla).forEach(talla => {
-      const colorsForTalla = colorQuantitiesByTalla[talla];
-    
-      Object.keys(colorsForTalla).forEach(color => {
-        const quantity = parseInt(colorsForTalla[color]);
-        if (quantity > 0) {
-          const product = products.find(p => 
-            p.modelo === selectedProductModel.modelo && 
-            p.talla === talla && 
-            p.color === color
-          );
-          if (product && quantity <= product.stock) {
-            newItems.push({
-              ...product,
-              quantity
-            });
-          }
-        }
-      });
-    });
-
-    if (newItems.length > 0) {
-      setCart([...cart, ...newItems]);
-      setSelectedProductModel(null);
-      setSelectedTallas([]);
-      setColorQuantitiesByTalla({});
+  const newItems = [];
+  Object.keys(colorQuantities).forEach(color => {
+    const quantity = parseInt(colorQuantities[color]);
+    if (quantity > 0) {
+      const product = products.find(p => 
+        p.modelo === selectedProductModel.modelo && 
+        p.talla === selectedTalla && 
+        p.color === color
+      );
+      if (product && quantity <= product.stock) {
+        newItems.push({
+          ...product,
+          quantity
+        });
+      }
     }
-  };
+  });
 
+  if (newItems.length > 0) {
+    setCart([...cart, ...newItems]);
+    setSelectedProductModel(null);
+    setSelectedTalla(null);
+    setColorQuantities({});
+  }
+};
+    
   const removeFromCart = (index) => {
     setCart(cart.filter((_, i) => i !== index));
   };
