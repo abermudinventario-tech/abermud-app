@@ -654,6 +654,7 @@ function App() {
           textColor: [255, 255, 255],
           fontStyle: 'bold',
           fontSize: 8
+		  halign: 'center'
         },
         bodyStyles: { fontSize: 8 },
         columnStyles: {
