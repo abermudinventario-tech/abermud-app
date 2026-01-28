@@ -36,15 +36,20 @@ function App() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingClient, setEditingClient] = useState(null);
   const [viewingSale, setViewingSale] = useState(null);
+  const [showAddStock, setShowAddStock] = useState(false);
+  const [showStockHistory, setShowStockHistory] = useState(false);
+  const [viewingReport, setViewingReport] = useState(null);
 
   const [newProduct, setNewProduct] = useState({
     modelo: '',
     color: '',
-    talla: '',
     imagen: '',
     precioCompra: '',
     precioVenta: '',
-    stock: ''
+    stockS: '',
+    stockM: '',
+    stockL: '',
+    stockXL: ''
   });
 
   const [newClient, setNewClient] = useState({
@@ -67,6 +72,19 @@ function App() {
   const [selectedProductModel, setSelectedProductModel] = useState(null);
   const [selectedTalla, setSelectedTalla] = useState(null);
   const [colorQuantities, setColorQuantities] = useState({});
+
+  // Estados para agregar stock
+  const [stockHistory, setStockHistory] = useState([]);
+  const [stockToAdd, setStockToAdd] = useState({
+    productId: null,
+    modelo: '',
+    color: '',
+    stockS: '',
+    stockM: '',
+    stockL: '',
+    stockXL: ''
+  });	
+	
   // Estados para filtros de reportes
   const [reportFilter, setReportFilter] = useState('hoy');
   const [customDateRange, setCustomDateRange] = useState({
@@ -104,48 +122,84 @@ function App() {
       (snapshot) => {
         const salesData = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        }));
-        setSales(salesData);
-      }
-    );
+        ...doc.data()
+      }));
+      setSales(salesData);
+    }
+  );
 
-    return () => {
-      unsubscribeProducts();
-      unsubscribeClients();
-      unsubscribeSales();
-    };
+  const unsubscribeStockHistory = onSnapshot(
+    query(collection(db, 'stockHistory'), orderBy('createdAt', 'desc')),
+    (snapshot) => {
+      const historyData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setStockHistory(historyData);
+    }
+  );
+
+  return () => {
+    unsubscribeProducts();
+    unsubscribeClients();
+    unsubscribeSales();
+    unsubscribeStockHistory();
+  };
   }, []);
 
   // FUNCIONES DE PRODUCTOS
   const addProduct = async () => {
-    if (!newProduct.modelo || !newProduct.precioVenta || !newProduct.stock) {
+    if (!newProduct.modelo || !newProduct.precioVenta || !newProduct.color) {
       alert('Por favor complete los campos requeridos');
       return;
     }
 
     try {
       const today = new Date().toISOString().split('T')[0];
-      await addDoc(collection(db, 'products'), {
+      const tallas = [
+        { talla: 'S', stock: parseInt(newProduct.stockS) || 0 },
+        { talla: 'M', stock: parseInt(newProduct.stockM) || 0 },
+        { talla: 'L', stock: parseInt(newProduct.stockL) || 0 },
+        { talla: 'XL', stock: parseInt(newProduct.stockXL) || 0 }
+      ];
+
+      // Crear un producto por cada talla
+      for (const tallaData of tallas) {
+        await addDoc(collection(db, 'products'), {
+          modelo: newProduct.modelo,
+          color: newProduct.color,
+          talla: tallaData.talla,
+          imagen: newProduct.imagen || '',
+          precioCompra: parseFloat(newProduct.precioCompra) || 0,
+          precioVenta: parseFloat(newProduct.precioVenta),
+          stock: tallaData.stock,
+          createdAt: serverTimestamp(),
+          lastStockUpdate: today
+        });
+      }
+
+      // Registrar en historial de stock
+      await addDoc(collection(db, 'stockHistory'), {
         modelo: newProduct.modelo,
         color: newProduct.color,
-        talla: newProduct.talla,
-        imagen: newProduct.imagen || '',
-        precioCompra: parseFloat(newProduct.precioCompra) || 0,
-        precioVenta: parseFloat(newProduct.precioVenta),
-        stock: parseInt(newProduct.stock),
-        createdAt: serverTimestamp(),
-        lastStockUpdate: today
+        action: 'create',
+        stockS: parseInt(newProduct.stockS) || 0,
+        stockM: parseInt(newProduct.stockM) || 0,
+        stockL: parseInt(newProduct.stockL) || 0,
+        stockXL: parseInt(newProduct.stockXL) || 0,
+        date: today,
+        createdAt: serverTimestamp()
       });
 
-      setNewProduct({ modelo: '', color: '', talla: '', imagen: '', precioCompra: '', precioVenta: '', stock: '' });
-      setShowAddProduct(false);
+      setNewProduct({ modelo: '', color: '', imagen: '', precioCompra: '', precioVenta: '', stockS: '', stockM: '', stockL: '', stockXL: '' });
+	  setShowAddProduct(false);
+      alert('Producto agregado exitosamente');
     } catch (error) {
       console.error('Error:', error);
       alert('Error al agregar producto');
     }
   };
-
+   
   const updateProduct = async () => {
     if (!editingProduct.modelo || !editingProduct.precioVenta) {
       alert('Por favor complete los campos requeridos');
@@ -186,6 +240,77 @@ function App() {
       } catch (error) {
         console.error('Error:', error);
       }
+    }
+  };
+
+  const addStockToProduct = async () => {
+    if (!stockToAdd.productId || (!stockToAdd.stockS && !stockToAdd.stockM && !stockToAdd.stockL && !stockToAdd.stockXL)) {
+      alert('Por favor seleccione un producto y agregue cantidades');
+      return;
+    }
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const tallas = [
+        { talla: 'S', stock: parseInt(stockToAdd.stockS) || 0 },
+        { talla: 'M', stock: parseInt(stockToAdd.stockM) || 0 },
+        { talla: 'L', stock: parseInt(stockToAdd.stockL) || 0 },
+        { talla: 'XL', stock: parseInt(stockToAdd.stockXL) || 0 }
+      ];
+
+      // Actualizar stock de cada talla
+      for (const tallaData of tallas) {
+        if (tallaData.stock > 0) {
+          const product = products.find(p => 
+            p.modelo === stockToAdd.modelo && 
+            p.color === stockToAdd.color && 
+            p.talla === tallaData.talla
+          );
+        
+          if (product) {
+            const productRef = doc(db, 'products', product.id);
+            await updateDoc(productRef, {
+              stock: product.stock + tallaData.stock,
+              lastStockUpdate: today
+            });
+          }
+        }
+      }
+
+      // Registrar en historial de stock
+      await addDoc(collection(db, 'stockHistory'), {
+        modelo: stockToAdd.modelo,
+        color: stockToAdd.color,
+        action: 'add',
+        stockS: parseInt(stockToAdd.stockS) || 0,
+        stockM: parseInt(stockToAdd.stockM) || 0,
+        stockL: parseInt(stockToAdd.stockL) || 0,
+        stockXL: parseInt(stockToAdd.stockXL) || 0,
+        date: today,
+        createdAt: serverTimestamp()
+      });
+
+      setStockToAdd({ productId: null, modelo: '', color: '', stockS: '', stockM: '', stockL: '', stockXL: '' });
+      setShowAddStock(false);
+      alert('Stock agregado exitosamente');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al agregar stock');
+    }
+  };
+
+  const selectProductForStock = (modelo, color) => {
+    const product = products.find(p => p.modelo === modelo && p.color === color);
+    if (product) {
+      setStockToAdd({
+        productId: product.id,
+        modelo: modelo,
+        color: color,
+        stockS: '',
+        stockM: '',
+        stockL: '',
+        stockXL: ''
+      });
     }
   };
 
@@ -365,7 +490,7 @@ function App() {
       await addDoc(collection(db, 'sales'), {
         orderNumber: orderNumber,
         clientId: selectedClient?.id || null,
-        clientName: selectedClient?.nombre || 'Cliente sin DNI',
+        clientName: selectedClient?.nombre || `Cliente #${orderNumber}`,
         clientDNI: selectedClient?.dni || '',
         clientPhone: selectedClient?.telefono || '',
         clientAddress: selectedClient?.direccion || '',
@@ -446,7 +571,7 @@ function App() {
         case 'semana':
           const weekAgo = new Date(today);
           weekAgo.setDate(weekAgo.getDate() - 7);
-          return saleDate >= weekAgo;
+          const saleDate = new Date(saleDateString);
         case 'mes':
           const monthAgo = new Date(today);
           monthAgo.setMonth(monthAgo.getMonth() - 1);
@@ -939,6 +1064,53 @@ doc.autoTable({
     doc.save(`ABermud_Variantes_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
+  const generateStockHistoryPDF = () => {
+    const doc = new jsPDF();
+    
+    doc.setFillColor(0, 0, 0);
+    doc.rect(0, 0, 210, 35, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text('ABermud', 20, 18);
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'italic');
+    doc.text('Lo bueno va contigo', 20, 25);
+    
+    doc.setFont(undefined, 'normal');
+    doc.text('Historial de Entradas de Stock', 20, 32);
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.text(`Fecha: ${new Date().toLocaleDateString('es-PE')}`, 20, 45);
+
+    const tableData = stockHistory.map(entry => [
+      new Date(entry.date).toLocaleDateString('es-PE'),
+      entry.modelo,
+      entry.color,
+      entry.action === 'create' ? 'Creación' : 'Entrada',
+      `S:${entry.stockS || 0}  M:${entry.stockM || 0}  L:${entry.stockL || 0}  XL:${entry.stockXL || 0}`
+    ]);
+
+    doc.autoTable({
+      startY: 55,
+      head: [['Fecha', 'Modelo', 'Color', 'Tipo', 'Cantidades']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { 
+        fillColor: [0, 0, 0],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 8
+      },
+      styles: { fontSize: 8 }
+    });
+
+    doc.save(`ABermud_Historial_Stock_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+	
   // Obtener inventario matricial
   const getMatrixInventory = () => {
     const grouped = {};
@@ -1258,14 +1430,23 @@ doc.autoTable({
                   className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:border-black focus:ring-2 focus:ring-black/10 outline-none transition-all shadow-sm text-sm"
                 />
               </div>
-              <button
-                onClick={() => setShowAddProduct(true)}
-                className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm"
-              >
-                <Plus size={18} />
-                <span>Agregar</span>
-              </button>
-            </div>
+              <div className="flex gap-3">
+  				<button
+   				  onClick={() => setShowAddProduct(true)}
+    			  className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm"
+ 			    >
+   				  <Plus size={18} />
+  			      <span>Agregar Producto</span>
+ 			    </button>
+ 			    <button
+  			      onClick={() => setShowAddStock(true)}
+    		      className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm"
+ 			    >
+  				  <Plus size={18} />
+ 			      <span>Agregar Stock</span>
+			   </button>
+			 </div>
+		     </div>
 
             <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
@@ -1669,17 +1850,7 @@ doc.autoTable({
             </div>
 
             <div className="space-y-3">
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-1">URL Imagen (opcional)</label>
-                <input
-                  type="text"
-                  value={newProduct.imagen}
-                  onChange={(e) => setNewProduct({ ...newProduct, imagen: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
-                  placeholder="https://i.imgur.com/ejemplo.jpg"
-                />
-              </div>
-
+              
               <div>
                 <label className="block text-gray-700 text-sm font-medium mb-1">Modelo *</label>
                 <input
@@ -1702,16 +1873,7 @@ doc.autoTable({
                     placeholder="Negro"
                   />
                 </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Talla</label>
-                  <input
-                    type="text"
-                    value={newProduct.talla}
-                    onChange={(e) => setNewProduct({ ...newProduct, talla: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
-                    placeholder="M"
-                  />
-                </div>
+                
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -1738,15 +1900,50 @@ doc.autoTable({
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-1">Stock *</label>
-                  <input
-                    type="number"
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
-                    placeholder="0"
-                  />
-                </div>
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Stock por Talla</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    <div>
+                      <label className="block text-gray-600 text-xs mb-1">Talla S</label>
+                      <input
+                        type="number"
+                        value={newProduct.stockS}
+                        onChange={(e) => setNewProduct({ ...newProduct, stockS: e.target.value })}
+                        className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-600 text-xs mb-1">Talla M</label>
+                      <input
+                        type="number"
+                        value={newProduct.stockM}
+                        onChange={(e) => setNewProduct({ ...newProduct, stockM: e.target.value })}
+                        className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-600 text-xs mb-1">Talla L</label>
+                      <input
+                        type="number"
+                        value={newProduct.stockL}
+                        onChange={(e) => setNewProduct({ ...newProduct, stockL: e.target.value })}
+                        className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-600 text-xs mb-1">Talla XL</label>
+                      <input
+                        type="number"
+                        value={newProduct.stockXL}
+                        onChange={(e) => setNewProduct({ ...newProduct, stockXL: e.target.value })}
+                        className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div> 
+                </div> 
               </div>
 
               <div className="flex gap-3 pt-3">
@@ -1780,16 +1977,7 @@ doc.autoTable({
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">URL Imagen</label>
-                <input
-                  type="text"
-                  value={editingProduct.imagen || ''}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, imagen: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-black/10 outline-none text-sm"
-                />
-              </div>
-
+              
               <div>
                 <label className="block text-sm font-medium mb-1">Modelo *</label>
                 <input
