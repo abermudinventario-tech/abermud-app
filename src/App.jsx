@@ -2049,10 +2049,28 @@ doc.autoTable({
 
               <div className="space-y-4">
                 {!stockToAdd.modelo ? (
-                  // Paso 1: Seleccionar producto
-                  <div>
-                    <label className="block text-sm font-medium mb-3">Seleccione el producto:</label>
+				  // Paso 1: Seleccionar producto
+			      <div>
+                    <label className="block text-sm font-medium mb-2">Seleccione el producto:</label>
+    
+                    {/* BUSCADOR */}
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        placeholder="Buscar por modelo o color..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                      />
+                    </div>
+    
                     <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {getMatrixInventory()
+                        .filter(item => 
+                          item.modelo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.color.toLowerCase().includes(searchTerm.toLowerCase())
+                        )
+                        .map((item, index) => (
                       {getMatrixInventory().map((item, index) => (
                         <button
                           key={index}
