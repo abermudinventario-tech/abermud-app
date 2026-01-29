@@ -91,6 +91,9 @@ function App() {
     start: new Date().toISOString().split('T')[0],
     end: new Date().toISOString().split('T')[0]
   });
+  // Estados para drill-down de reportes
+  const [selectedReportDate, setSelectedReportDate] = useState(null);
+  const [salesSortBy, setSalesSortBy] = useState('mas-vendido');
 
   // Sincronización con Firebase
   useEffect(() => {
@@ -586,6 +589,92 @@ function App() {
           return true;
       }
     });
+  };
+
+  // Agrupar ventas por fecha para NIVEL 1
+  const getSalesGroupedByDate = () => {
+    const filtered = getFilteredSales();
+    const grouped = {};
+  
+    filtered.forEach(sale => {
+      const dateKey = sale.date;
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = {
+          date: dateKey,
+          sales: [],
+          total: 0,
+          count: 0
+        };
+      }
+      grouped[dateKey].sales.push(sale);
+      grouped[dateKey].total += sale.total;
+      grouped[dateKey].count += 1;
+    });
+  
+    // Ordenar por fecha descendente (más reciente primero)
+    return Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
+  };
+
+  // Obtener TOP 3 productos del día
+  const getTop3ProductsOfDay = (dateSales) => {
+    const productCount = {};
+  
+    dateSales.forEach(sale => {
+      sale.items.forEach(item => {
+        const key = `${item.modelo}`;
+        if (!productCount[key]) {
+          productCount[key] = {
+            modelo: item.modelo,
+            cantidad: 0,
+            total: 0
+          };
+        }
+        productCount[key].cantidad += item.quantity;
+        productCount[key].total += item.subtotal;
+      });
+    });
+  
+    return Object.values(productCount)
+      .sort((a, b) => b.cantidad - a.cantidad)
+      .slice(0, 3);
+  };
+
+  // Ordenar ventas del día según criterio
+  const getSortedDaySales = (dateSales, sortBy) => {
+    const sorted = [...dateSales];
+  
+    switch(sortBy) {
+      case 'mas-vendido':
+        // Ordenar por productos más vendidos (cantidad de items)
+        return sorted.sort((a, b) => b.items.length - a.items.length);
+    
+      case 'pedido':
+        // Ordenar por número de pedido ascendente
+        return sorted.sort((a, b) => a.orderNumber.localeCompare(b.orderNumber));
+    
+      case 'medio':
+        // Ordenar por medio (LIVE primero)
+        return sorted.sort((a, b) => {
+          if (a.salesChannel === 'LIVE' && b.salesChannel !== 'LIVE') return -1;
+          if (a.salesChannel !== 'LIVE' && b.salesChannel === 'LIVE') return 1;
+          return 0;
+        });
+    
+      case 'cliente':
+        // Ordenar por monto de compra descendente
+        return sorted.sort((a, b) => b.total - a.total);
+    
+      case 'monto':
+        // Ordenar por monto mayor a menor
+        return sorted.sort((a, b) => b.total - a.total);
+    
+      case 'hora':
+        // Ordenar por más reciente primero
+        return sorted.sort((a, b) => new Date(b.createdAt?.seconds || 0) - new Date(a.createdAt?.seconds || 0));
+    
+      default:
+        return sorted;
+    }
   };
 
   // REPORTES PDF
@@ -2350,39 +2439,195 @@ doc.autoTable({
                  </div>
                )}
 
-       		   {/* VENTAS */}
-         	   {viewingReport === 'ventas' && (
-          	     <table className="w-full">
-                   <thead className="bg-gray-50 border-b-2">
-                     <tr>
-                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Fecha</th>
-                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Nº Pedido</th>
-                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Cliente</th>
-                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Items</th>
-                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Total</th>
-                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Medio</th>
-                     </tr>
-                   </thead>
-                   <tbody className="divide-y">
-                     {getFilteredSales().map(sale => (
-                       <tr key={sale.id} className="hover:bg-gray-50">
-                         <td className="px-4 py-3 text-sm">{new Date(sale.date).toLocaleDateString('es-PE')}</td>
-                         <td className="px-4 py-3 text-sm font-mono">#{sale.orderNumber}</td>
-                         <td className="px-4 py-3 text-sm font-medium">{sale.clientName}</td>
-                         <td className="px-4 py-3 text-sm">{sale.items.length}</td>
-                         <td className="px-4 py-3 text-sm font-bold text-emerald-600">S/ {sale.total.toFixed(2)}</td>
-                         <td className="px-4 py-3 text-sm">
-                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                             sale.salesChannel === 'LIVE' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
-                           }`}>
-                             {sale.salesChannel || 'TIENDA'}
-                           </span>
-                         </td>
-                       </tr>
-                     ))}
-                   </tbody>
-                 </table>
-               )}
+       		   {/* VENTAS - NIVEL 1 Y 2 */}
+			   {viewingReport === 'ventas' && (
+			     <div>
+  				   {!selectedReportDate ? (
+     				 // ========== NIVEL 1: VISTA POR FECHAS ==========
+      				 <div>
+    			       <div className="mb-4">
+        			     <h3 className="text-lg font-semibold text-gray-700">Ventas por Fecha</h3>
+      				     <p className="text-sm text-gray-500">Haz clic en una fecha para ver el detalle</p>
+      				   </div>
+        
+        			   <div className="space-y-2">
+        			     {getSalesGroupedByDate().map((dateGroup) => (
+       		               <button
+          				     key={dateGroup.date}
+            			     onClick={() => setSelectedReportDate(dateGroup.date)}
+             			     className="w-full p-4 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-lg hover:border-emerald-500 hover:shadow-md transition-all text-left group"
+        			       >
+           				     <div className="flex items-center justify-between">
+               				   <div className="flex-1">
+                			     <div className="flex items-center gap-3">
+                    			   <Calendar className="text-gray-400 group-hover:text-emerald-500" size={20} />
+                  				   <span className="font-bold text-gray-800">
+                    			     {new Date(dateGroup.date).toLocaleDateString('es-PE', { 
+                     			       weekday: 'long', 
+                       				   year: 'numeric', 
+                     			       month: 'long', 
+                     				   day: 'numeric' 
+                     				 })}
+                  				   </span>
+                			     </div>
+                                 <div className="ml-8 mt-1 text-sm text-gray-500">
+                                   {dateGroup.count} {dateGroup.count === 1 ? 'venta' : 'ventas'}
+                                 </div>
+                               </div>
+                               <div className="flex items-center gap-4">
+                                 <span className="text-2xl font-bold text-emerald-600">
+                                   S/ {dateGroup.total.toFixed(2)}
+                                 </span>
+                                 <ChevronRight className="text-gray-400 group-hover:text-emerald-500" size={24} />
+             				   </div>
+           				     </div>
+       				       </button>
+				         ))}
+          
+			             {getSalesGroupedByDate().length === 0 && (
+          				   <div className="text-center py-12 text-gray-400">
+           				     <ShoppingCart size={48} className="mx-auto mb-3 opacity-50" />
+           				     <p>No hay ventas en el período seleccionado</p>
+     				       </div>
+         				 )}
+				       </div>
+     				 </div>
+  				   ) : (
+                     // ========== NIVEL 2: DETALLE DEL DÍA ==========
+                     <div>
+        			   {(() => {
+       				     const dateGroup = getSalesGroupedByDate().find(g => g.date === selectedReportDate);
+				         const top3 = getTop3ProductsOfDay(dateGroup.sales);
+        			     const sortedSales = getSortedDaySales(dateGroup.sales, salesSortBy);
+          
+                         return (
+                           <>
+             				 {/* Header con botón volver */}
+            			     <div className="mb-4 pb-4 border-b-2 border-gray-200">
+              			       <button
+               				     onClick={() => setSelectedReportDate(null)}
+            			         className="flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-medium mb-3 transition-colors"
+               				   >
+               				     <ChevronLeft size={20} />
+                			     Volver a fechas
+               				   </button>
+               				   <div className="flex items-center justify-between">
+                 			     <div>
+                 			       <h3 className="text-xl font-bold text-gray-800">
+                    			     {new Date(selectedReportDate).toLocaleDateString('es-PE', { 
+                                       weekday: 'long', 
+				                       year: 'numeric', 
+                   			           month: 'long', 
+			                           day: 'numeric' 
+                  				     })}
+                 			       </h3>
+                   				   <p className="text-gray-500">
+           				             {dateGroup.count} {dateGroup.count === 1 ? 'venta' : 'ventas'} • 
+				                     Total del día: <span className="font-bold text-emerald-600">S/ {dateGroup.total.toFixed(2)}</span>
+               				       </p>
+                			     </div>
+                  
+                                 {/* Selector de ordenamiento */}
+              				     <select
+                    			   value={salesSortBy}
+                   				   onChange={(e) => setSalesSortBy(e.target.value)}
+                 				   className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm font-medium"
+                 				 >
+                    			   <option value="mas-vendido">🔥 Más vendido</option>
+                   				   <option value="pedido">📦 Nº Pedido</option>
+                 			       <option value="medio">📱 Medio (LIVE/TIENDA)</option>
+					               <option value="cliente">👤 Cliente (mayor compra)</option>
+                   				   <option value="monto">💰 Monto (mayor a menor)</option>
+                 		           <option value="hora">⏰ Hora (más reciente)</option>
+            			         </select>
+             				   </div>
+           				     </div>
+              
+        			         {/* TOP 3 del día */}
+       				         {top3.length > 0 && (
+          			           <div className="mb-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-lg p-4">
+             			         <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  				   <span className="text-xl">🏆</span> TOP 3 DEL DÍA
+                 				 </h4>
+           				         <div className="space-y-2">
+                			       {top3.map((product, index) => (
+                      				 <div key={index} className="flex items-center justify-between bg-white rounded-lg px-4 py-2 shadow-sm">
+                     				   <div className="flex items-center gap-3">
+                        			     <span className="text-2xl font-bold text-gray-300">
+                     			          {index + 1}º
+                       				    </span>
+                     			        <div>
+                        			      <p className="font-bold text-gray-800">{product.modelo}</p>
+                          			      <p className="text-sm text-gray-500">{product.cantidad} unidades vendidas</p>
+                   				        </div>
+                      				  </div>
+                      				  <span className="font-bold text-emerald-600">
+                        			    S/ {product.total.toFixed(2)}
+				                      </span>
+                   				    </div>
+                  				  ))}
+                			    </div>
+              				  </div>
+          				    )}
+              
+              				{/* Tabla detallada de ventas */}
+            			    <div className="bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+           				      <table className="w-full">
+			                    <thead className="bg-gray-50 border-b-2 border-gray-200">
+                  			      <tr>
+                   				    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">#Pedido</th>
+                 			        <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">Medio</th>
+                    			    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">Cliente</th>
+                   				    <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">Productos</th>
+                   				    <th className="px-4 py-3 text-right text-xs font-bold text-gray-700 uppercase">Total</th>
+                  				  </tr>
+              			        </thead>
+              				    <tbody className="divide-y divide-gray-200">
+                 			      {sortedSales.map(sale => {
+                			        // Extraer número final del pedido para clientes sin nombre
+                      				const orderParts = sale.orderNumber.split('-');
+              				        const clientNumber = orderParts[orderParts.length - 1];
+                    				  const displayName = sale.clientName === 'Cliente sin DNI' 
+                       				    ? `Cliente #${clientNumber}` 
+                     				    : sale.clientName;
+	                      
+                   				      return (
+				                        <tr key={sale.id} className="hover:bg-gray-50">
+                  			              <td className="px-4 py-3 text-sm font-mono text-gray-600">
+                      				        #{sale.orderNumber}
+                    				      </td>
+                        				  <td className="px-4 py-3 text-sm">
+                      				        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            				  sale.salesChannel === 'LIVE' 
+                       				            ? 'bg-red-100 text-red-700' 
+                             				    : 'bg-blue-100 text-blue-700'
+                       				        }`}>
+                        				      {sale.salesChannel === 'LIVE' ? '🔴 LIVE' : '🏪 TIENDA'}
+                     				        </span>
+                       				      </td>
+                       				      <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                        			        {displayName}
+                      				      </td>
+                     				      <td className="px-4 py-3 text-sm text-gray-600">
+                      				        {sale.items.map(item => item.modelo).join(', ')}
+                        				  </td>
+                       				      <td className="px-4 py-3 text-sm font-bold text-emerald-600 text-right">
+                          				    S/ {sale.total.toFixed(2)}
+                       				      </td>
+                      				    </tr>
+                   				      );
+                 				    })}
+                 				  </tbody>
+             				    </table>
+        				      </div>
+          				    </>
+       				      );
+    			        })()}
+  				      </div>
+ 				    )}
+		          </div>
+				)}
+         	   
 
                {/* VARIANTES */}
                {viewingReport === 'variantes' && (
