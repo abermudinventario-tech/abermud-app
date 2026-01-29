@@ -1765,14 +1765,24 @@ doc.autoTable({
                   <FileText className="text-gray-300" size={28} />
                 </div>
 
-                <button
-                  onClick={generateStockPDF}
-                  disabled={products.length === 0}
-                  className="w-full px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
-                >
-                  <Download size={18} />
-                  Exportar PDF
-                </button>
+                <div className="flex gap-2">
+ 			      <button
+  				    onClick={() => setViewingReport('stock-general')}
+    			    disabled={products.length === 0}
+    			    className="flex-1 px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+                  >
+			        <Eye size={18} />
+                    Ver
+                  </button>
+                  <button
+                    onClick={generateStockPDF}
+                    disabled={products.length === 0}
+                    className="flex-1 px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+                  >
+                    <Download size={18} />
+                    PDF
+ 			      </button>
+                </div>
               </div>
 
               <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-md hover:shadow-xl transition-shadow">
@@ -1784,14 +1794,24 @@ doc.autoTable({
                   <FileText className="text-gray-300" size={28} />
                 </div>
 
-                <button
-                  onClick={generateStockForClientsPDF}
-                  disabled={products.length === 0}
-                  className="w-full px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
-                >
-                  <Download size={18} />
-                  Exportar PDF
-                </button>
+                <div className="flex gap-2">
+ 				  <button
+ 				    onClick={() => setViewingReport('stock-clientes')}
+  			        disabled={products.length === 0}
+    		        className="flex-1 px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+ 			    >
+  				    <Eye size={18} />
+			        Ver
+ 				  </button>
+ 			      <button
+				    onClick={generateStockForClientsPDF}
+ 				    disabled={products.length === 0}
+ 			        className="flex-1 px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+			    >
+ 				    <Download size={18} />
+   			        PDF
+			      </button>
+				</div>
               </div>
 
               <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
@@ -1803,14 +1823,24 @@ doc.autoTable({
                   <FileText className="text-white/40" size={28} />
                 </div>
 
-                <button
-                  onClick={generateSalesPDF}
-                  disabled={sales.length === 0}
-                  className="w-full px-4 py-2 bg-white text-emerald-600 rounded-lg font-medium hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
-                >
-                  <Download size={18} />
-                  Exportar PDF
-                </button>
+              <div className="flex gap-2">
+			    <button
+			      onClick={() => setViewingReport('ventas')}
+ 			      disabled={sales.length === 0}
+ 			      className="flex-1 px-4 py-2 bg-white text-emerald-600 rounded-lg font-medium hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+			    >
+  			      <Eye size={18} />
+			      Ver
+			    </button>
+  				<button
+   				  onClick={generateSalesPDF}
+  				  disabled={sales.length === 0}
+			      className="flex-1 px-4 py-2 bg-white text-emerald-600 rounded-lg font-medium hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+			    >
+			      <Download size={18} />
+                  PDF
+ 			    </button>
+              </div>  
               </div>
 
               <div className="bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
@@ -1822,14 +1852,24 @@ doc.autoTable({
                   <FileText className="text-white/40" size={28} />
                 </div>
 
-                <button
-                  onClick={generateVariantsPDF}
-                  disabled={sales.length === 0}
-                  className="w-full px-4 py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
-                >
-                  <Download size={18} />
-                  Exportar PDF
-                </button>
+              <div className="flex gap-2">
+			    <button
+ 			      onClick={() => setViewingReport('variantes')}
+ 			      disabled={sales.length === 0}
+  				  className="flex-1 px-4 py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+			    >
+ 			      <Eye size={18} />
+   				  Ver
+			    </button>
+ 			    <button
+   				  onClick={generateVariantsPDF}
+			      disabled={sales.length === 0}
+			      className="flex-1 px-4 py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+ 			    >
+		          <Download size={18} />
+			      PDF
+			    </button>
+			  </div>  
               </div>
             </div>
           </div>
@@ -1960,12 +2000,421 @@ doc.autoTable({
                   Agregar
                 </button>
               </div>
+			  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-2">Historial de Stock</h3>
+                    <p className="text-blue-100 text-sm">Entradas de inventario por fecha</p>
+                  </div>
+                  <FileText className="text-white/40" size={28} />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowStockHistory(true)}
+                    disabled={stockHistory.length === 0}
+                    className="flex-1 px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+                  >
+                    <Eye size={18} />
+                    Ver
+                  </button>
+                  <button
+                    onClick={generateStockHistoryPDF}
+                    disabled={stockHistory.length === 0}
+                    className="flex-1 px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50 text-sm"
+                  >
+                    <Download size={18} />
+                    PDF
+                  </button>
+                </div>
+              </div>	
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL: Editar Producto */}
+        {/* MODAL: Agregar Stock */}
+  	    {showAddStock && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold">Agregar Stock a Producto Existente</h2>
+                <button onClick={() => {
+                  setShowAddStock(false);
+                  setStockToAdd({ productId: null, modelo: '', color: '', stockS: '', stockM: '', stockL: '', stockXL: '' });
+                }} className="p-2 hover:bg-gray-100 rounded-lg">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {!stockToAdd.modelo ? (
+                  // Paso 1: Seleccionar producto
+                  <div>
+                    <label className="block text-sm font-medium mb-3">Seleccione el producto:</label>
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {getMatrixInventory().map((item, index) => (
+                        <button
+                          key={index}
+                          onClick={() => selectProductForStock(item.modelo, item.color)}
+                          className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="font-bold text-black">{item.modelo}</p>
+                              <p className="text-sm text-gray-600">{item.color}</p>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              S:{item.sizes['S'] || 0} M:{item.sizes['M'] || 0} L:{item.sizes['L'] || 0} XL:{item.sizes['XL'] || 0}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  // Paso 2: Agregar cantidades
+                  <div>
+                    <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                      <p className="text-sm text-gray-600">Agregando stock a:</p>
+                      <p className="font-bold text-black text-lg">{stockToAdd.modelo} - {stockToAdd.color}</p>
+                    </div>
+
+                    <label className="block text-sm font-medium mb-2">Cantidad a agregar por talla:</label>
+                    <div className="grid grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Talla S</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={stockToAdd.stockS}
+                          onChange={(e) => setStockToAdd({ ...stockToAdd, stockS: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                          placeholder="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Talla M</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={stockToAdd.stockM}
+                          onChange={(e) => setStockToAdd({ ...stockToAdd, stockM: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                          placeholder="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Talla L</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={stockToAdd.stockL}
+                          onChange={(e) => setStockToAdd({ ...stockToAdd, stockL: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                          placeholder="0"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Talla XL</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={stockToAdd.stockXL}
+                          onChange={(e) => setStockToAdd({ ...stockToAdd, stockXL: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => setStockToAdd({ productId: null, modelo: '', color: '', stockS: '', stockM: '', stockL: '', stockXL: '' })}
+                        className="flex-1 px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300 text-sm"
+                      >
+                        ← Volver
+                      </button>
+                      <button
+                        onClick={addStockToProduct}
+                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 text-sm"
+                      >
+                        Agregar Stock
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+       {/* MODAL: Ver Historial de Stock */}
+       {showStockHistory && (
+         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+           <div className="bg-white rounded-2xl p-6 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+             <div className="flex items-center justify-between mb-4">
+               <h2 className="text-xl font-bold">Historial de Entradas de Stock</h2>
+               <button onClick={() => setShowStockHistory(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                 <X size={20} />
+               </button>
+             </div>
+
+             <div className="overflow-x-auto">
+               <table className="w-full">
+                 <thead className="bg-gray-50 border-b-2 border-gray-200">
+                   <tr>
+                     <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">Fecha</th>
+                     <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">Modelo</th>
+                     <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">Color</th>
+                     <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase">Tipo</th>
+                     <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase">S</th>
+                     <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase">M</th>
+                     <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase">L</th>
+                     <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase">XL</th>
+                   </tr>
+                 </thead>
+                 <tbody className="divide-y divide-gray-200">
+                   {stockHistory.map((entry, index) => (
+                     <tr key={index} className="hover:bg-gray-50">
+                       <td className="px-4 py-3 text-sm text-gray-600">
+                         {new Date(entry.date).toLocaleDateString('es-PE')}
+                       </td>
+                       <td className="px-4 py-3 text-sm font-medium text-black">{entry.modelo}</td>
+                       <td className="px-4 py-3 text-sm text-gray-600">{entry.color}</td>
+                       <td className="px-4 py-3 text-center">
+                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                           entry.action === 'create' 
+                             ? 'bg-green-100 text-green-700' 
+                             : 'bg-blue-100 text-blue-700'
+                         }`}>
+                           {entry.action === 'create' ? 'Creación' : 'Entrada'}
+                         </span>
+                       </td>
+                       <td className="px-4 py-3 text-sm text-center font-semibold">{entry.stockS || 0}</td>
+                       <td className="px-4 py-3 text-sm text-center font-semibold">{entry.stockM || 0}</td>
+                       <td className="px-4 py-3 text-sm text-center font-semibold">{entry.stockL || 0}</td>
+                       <td className="px-4 py-3 text-sm text-center font-semibold">{entry.stockXL || 0}</td>
+                     </tr>
+                   ))}
+                 </tbody>
+               </table>
+             </div>
+
+             {stockHistory.length === 0 && (
+               <div className="text-center py-16">
+                 <FileText className="mx-auto text-gray-300 mb-4" size={64} />
+                 <p className="text-gray-500 text-lg font-medium">No hay historial de stock</p>
+               </div>
+             )}
+
+             <div className="flex gap-3 pt-4">
+               <button
+                 onClick={() => setShowStockHistory(false)}
+                 className="flex-1 px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300 text-sm"
+               >
+                 Cerrar
+               </button>
+               <button
+                 onClick={generateStockHistoryPDF}
+                 disabled={stockHistory.length === 0}
+                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 text-sm"
+               >
+                 <Download size={18} className="inline mr-2" />
+                 Descargar PDF
+               </button>
+             </div>
+           </div>
+         </div>
+       )} 
+
+       {/* MODAL: Visualización de Reportes */}
+	   {viewingReport && (
+  	     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+     	   <div className="bg-white rounded-2xl p-6 max-w-6xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+             <div className="flex items-center justify-between mb-4">
+               <h2 className="text-xl font-bold">
+                 {viewingReport === 'stock-general' && 'Stock General'}
+                 {viewingReport === 'stock-clientes' && 'Stock para Clientes'}
+                 {viewingReport === 'ventas' && 'Reporte de Ventas'}
+                 {viewingReport === 'variantes' && 'Reporte por Variantes'}
+               </h2>
+               <button onClick={() => setViewingReport(null)} className="p-2 hover:bg-gray-100 rounded-lg">
+                 <X size={20} />
+               </button>
+             </div>
+
+             <div className="overflow-x-auto">
+               {/* STOCK GENERAL */}
+               {viewingReport === 'stock-general' && (
+                 <div className="space-y-6">
+                   {Object.entries(
+                     products.reduce((acc, p) => {
+                       if (!acc[p.modelo]) acc[p.modelo] = {};
+                       if (!acc[p.modelo][p.color]) {
+                         acc[p.modelo][p.color] = { S: 0, M: 0, L: 0, XL: 0 };
+                       }
+                       acc[p.modelo][p.color][p.talla] = p.stock;
+                       return acc;
+                     }, {})
+                   ).map(([modelo, colores]) => (
+                     <div key={modelo}>
+                       <h3 className="text-lg font-bold mb-2">{modelo}</h3>
+                       <table className="w-full border">
+                         <thead className="bg-gray-50">
+                           <tr>
+                             <th className="border px-4 py-2 text-left">Color</th>
+                             <th className="border px-4 py-2 text-center">S</th>
+                             <th className="border px-4 py-2 text-center">M</th>
+                             <th className="border px-4 py-2 text-center">L</th>
+                             <th className="border px-4 py-2 text-center">XL</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {Object.entries(colores).map(([color, tallas]) => (
+                             <tr key={color}>
+                               <td className="border px-4 py-2">{color}</td>
+                               <td className={`border px-4 py-2 text-center font-bold ${
+                                 tallas.S >= 10 ? 'text-green-600' : tallas.S >= 6 ? 'text-yellow-600' : 'text-red-600'
+                               }`}>{tallas.S}</td>
+                               <td className={`border px-4 py-2 text-center font-bold ${
+                                 tallas.M >= 10 ? 'text-green-600' : tallas.M >= 6 ? 'text-yellow-600' : 'text-red-600'
+                               }`}>{tallas.M}</td>
+                               <td className={`border px-4 py-2 text-center font-bold ${
+                                 tallas.L >= 10 ? 'text-green-600' : tallas.L >= 6 ? 'text-yellow-600' : 'text-red-600'
+                               }`}>{tallas.L}</td>
+                               <td className={`border px-4 py-2 text-center font-bold ${
+                                 tallas.XL >= 10 ? 'text-green-600' : tallas.XL >= 6 ? 'text-yellow-600' : 'text-red-600'
+                               }`}>{tallas.XL}</td>
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>
+                     </div>
+                   ))}
+                 </div>
+               )}
+
+               {/* STOCK PARA CLIENTES */}
+               {viewingReport === 'stock-clientes' && (
+                 <div className="space-y-6">
+                   {Object.entries(
+                     products.filter(p => p.stock > 0).reduce((acc, p) => {
+                       if (!acc[p.modelo]) acc[p.modelo] = { S: new Set(), M: new Set(), L: new Set(), XL: new Set() };
+                       acc[p.modelo][p.talla].add(p.color);
+                       return acc;
+                     }, {})
+                   ).map(([modelo, tallas]) => (
+                     <div key={modelo}>
+                       <h3 className="text-lg font-bold mb-2">{modelo}</h3>
+                       <table className="w-full border">
+                         <thead className="bg-gray-50">
+                           <tr>
+                             <th className="border px-4 py-2">S</th>
+                             <th className="border px-4 py-2">M</th>
+                             <th className="border px-4 py-2">L</th>
+                             <th className="border px-4 py-2">XL</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {Array.from({ length: Math.max(...Object.values(tallas).map(s => s.size)) }).map((_, i) => (
+                             <tr key={i}>
+                               <td className="border px-4 py-2">{[...tallas.S][i] || '-'}</td>
+                               <td className="border px-4 py-2">{[...tallas.M][i] || '-'}</td>
+                               <td className="border px-4 py-2">{[...tallas.L][i] || '-'}</td>
+                               <td className="border px-4 py-2">{[...tallas.XL][i] || '-'}</td>
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>
+                     </div>
+                   ))}
+                 </div>
+               )}
+
+       		   {/* VENTAS */}
+         	   {viewingReport === 'ventas' && (
+          	     <table className="w-full">
+                   <thead className="bg-gray-50 border-b-2">
+                     <tr>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Fecha</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Nº Pedido</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Cliente</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Items</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Total</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Medio</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y">
+                     {getFilteredSales().map(sale => (
+                       <tr key={sale.id} className="hover:bg-gray-50">
+                         <td className="px-4 py-3 text-sm">{new Date(sale.date).toLocaleDateString('es-PE')}</td>
+                         <td className="px-4 py-3 text-sm font-mono">#{sale.orderNumber}</td>
+                         <td className="px-4 py-3 text-sm font-medium">{sale.clientName}</td>
+                         <td className="px-4 py-3 text-sm">{sale.items.length}</td>
+                         <td className="px-4 py-3 text-sm font-bold text-emerald-600">S/ {sale.total.toFixed(2)}</td>
+                         <td className="px-4 py-3 text-sm">
+                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                             sale.salesChannel === 'LIVE' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                           }`}>
+                             {sale.salesChannel || 'TIENDA'}
+                           </span>
+                         </td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+               )}
+
+               {/* VARIANTES */}
+               {viewingReport === 'variantes' && (
+                 <table className="w-full">
+                   <thead className="bg-gray-50 border-b-2">
+                     <tr>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Producto</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Color</th>
+                       <th className="px-4 py-3 text-left text-xs font-bold uppercase">Talla</th>
+                       <th className="px-4 py-3 text-center text-xs font-bold uppercase">Unidades</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y">
+                     {Object.values(
+                       getFilteredSales().reduce((acc, sale) => {
+                         sale.items.forEach(item => {
+                           const key = `${item.modelo}-${item.color}-${item.talla}`;
+                           if (!acc[key]) {
+                             acc[key] = { modelo: item.modelo, color: item.color, talla: item.talla, cantidad: 0 };
+                           }
+                           acc[key].cantidad += item.quantity;
+                         });
+                         return acc;
+                       }, {})
+                     ).sort((a, b) => b.cantidad - a.cantidad).map((v, i) => (
+                       <tr key={i} className="hover:bg-gray-50">
+                         <td className="px-4 py-3 text-sm font-medium">{v.modelo}</td>
+                         <td className="px-4 py-3 text-sm">{v.color}</td>
+                         <td className="px-4 py-3 text-sm">{v.talla}</td>
+                         <td className="px-4 py-3 text-sm text-center font-bold">{v.cantidad}</td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+               )}
+             </div>
+
+		     <div className="flex gap-3 pt-4 mt-4 border-t">
+               <button
+                 onClick={() => setViewingReport(null)}
+                 className="flex-1 px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300 text-sm"
+               >
+                 Cerrar
+               </button>
+             </div>
+           </div>
+         </div>
+       )} 
+		
+		{/* MODAL: Editar Producto */}
       {editingProduct && (
   	<div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     	  <div className="bg-white rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
