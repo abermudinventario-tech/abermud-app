@@ -3103,72 +3103,152 @@ doc.autoTable({
 		      <h4 className="font-medium mb-3">{selectedProductModel.modelo}</h4>
         
         	      <div className="mb-4">
-          		<p className="text-sm font-medium mb-2">Selecciona Talla:</p>
-          		<div className="grid grid-cols-4 gap-2">
-            		  {['S', 'M', 'L', 'XL'].map(talla => {
-             		    const hasStock = products.some(p => 
-                	      p.modelo === selectedProductModel.modelo && 
-                	      p.talla === talla && 
-                	      p.stock > 0
-              		    );
+          		<p className="text-sm font-medium mb-2">Stock y cantidades por talla:</p>
+              
+              {/* MATRIZ DE STOCK Y CANTIDADES */}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 px-3 py-2 text-left text-xs font-bold">
+                        Color / Talla
+                      </th>
+                      {['S', 'M', 'L', 'XL'].map(talla => (
+                        <th key={talla} className="border border-gray-300 px-3 py-2 text-center text-xs font-bold">
+                          {talla}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      // Obtener todos los colores únicos del producto
+                      const colorsSet = new Set();
+                      products.forEach(p => {
+                        if (p.modelo === selectedProductModel.modelo) {
+                          colorsSet.add(p.color);
+                        }
+                      });
+                      const colors = Array.from(colorsSet);
 
-			    return (
-                	      <button
-                  		key={talla}
-                  		onClick={() => hasStock && selectTalla(talla)}
-                  		disabled={!hasStock}
-                  		className={`py-2 rounded-lg font-medium text-sm ${
-                    		  selectedTalla === talla
-                      		    ? 'bg-black text-white'
-                      		    : hasStock
-                      		    ? 'bg-white border border-gray-300 hover:bg-gray-100'
-                      		    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  		}`}
-                	      >
-                  		{talla}
-                	      </button>
-              		    );
-            		  })}
-          		</div>
-        	      </div>
-		
-		      {selectedTalla && (
-          		<div>
-            		  <p className="text-sm font-medium mb-2">Colores disponibles en talla {selectedTalla}:</p>
-            		  <div className="space-y-2">
-              		    {getAvailableColorsForTalla().map((colorData, index) => (
-                	      <div key={index} className="flex items-center justify-between p-2 bg-white rounded border">
-                  		<span className="text-sm font-medium">{colorData.color}</span>
-                  		<div className="flex items-center gap-2">
-                   		  <span className="text-xs text-gray-500">({colorData.stock} unid.)</span>
-                    		  <input
-                      		    type="number"
-                      		    min="0"
-                      		    max={colorData.stock}
-                      		    value={colorQuantities[colorData.color] || 0}
-                      		    onChange={(e) => setColorQuantities({
-                        	      ...colorQuantities,
-                        	      [colorData.color]: parseInt(e.target.value) || 0
-                      		    })}
-                      		    className="w-16 px-2 py-1 border rounded text-center text-sm"
-                   		  />
-                  		</div>
-                	      </div>
-		     	    ))}
-            		  </div>
+                      return colors.map((color, colorIndex) => (
+                        <tr key={colorIndex}>
+                          <td className="border border-gray-300 px-3 py-2 text-sm font-medium bg-gray-50">
+                            {color}
+                          </td>
+                          {['S', 'M', 'L', 'XL'].map(talla => {
+                            // Buscar el producto específico
+                            const product = products.find(p => 
+                              p.modelo === selectedProductModel.modelo &&
+                              p.color === color &&
+                              p.talla === talla
+                            );
+                            
+                            const stock = product?.stock || 0;
+                            const inputKey = `${color}-${talla}`;
+                            const currentQty = colorQuantities[inputKey] || 0;
+                            
+                            return (
+                              <td key={talla} className="border border-gray-300 px-2 py-2">
+                                <div className="flex items-center justify-center gap-2">
+                                  {/* STOCK (semaforizado) */}
+                                  <span className={`text-sm font-bold px-2 py-1 rounded ${
+                                    stock >= 10 ? 'text-green-600 bg-green-50' : 
+                                    stock >= 6 ? 'text-yellow-600 bg-yellow-50' : 
+                                    'text-red-600 bg-red-50'
+                                  }`}>
+                                    {stock}
+                                  </span>
+                                  
+                                  {/* INPUT (sombreado) */}
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max={stock}
+                                    value={currentQty}
+                                    disabled={stock === 0}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value) || 0;
+                                      
+                                      // Validación en tiempo real
+                                      if (value > stock) {
+                                        alert(`Stock insuficiente. Disponible: ${stock}`);
+                                        return;
+                                      }
+                                      
+                                      setColorQuantities({
+                                        ...colorQuantities,
+                                        [inputKey]: value
+                                      });
+                                    }}
+                                    className={`w-14 px-2 py-1 border rounded text-center text-sm ${
+                                      stock === 0 
+                                        ? 'bg-gray-100 cursor-not-allowed' 
+                                        : 'bg-gray-50 border-gray-300'
+                                    }`}
+                                  />
+                                </div>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
+              </div>
 
-			  <button
-              		    onClick={addToCart}
-             		    className="w-full mt-3 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 text-sm"
-            		  >
-              		    Agregar al Carrito
-           		  </button>
-          		</div>
-        	      )}
-      		    </div>
-    		  </div>
-  		)}
-	      </div>
+              {/* BOTONES */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setSelectedProductModel(null);
+                    setSelectedTalla(null);
+                    setColorQuantities({});
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
+                >
+                  ← Volver
+                </button>
+                <button
+                  onClick={() => {
+                    // Agregar al carrito todas las cantidades ingresadas
+                    Object.entries(colorQuantities).forEach(([key, quantity]) => {
+                      if (quantity > 0) {
+                        const [color, talla] = key.split('-');
+                        const product = products.find(p => 
+                          p.modelo === selectedProductModel.modelo &&
+                          p.color === color &&
+                          p.talla === talla
+                        );
+                        
+                        if (product) {
+                          const cartItem = {
+                            id: product.id,
+                            modelo: product.modelo,
+                            color: product.color,
+                            talla: product.talla,
+                            quantity: quantity,
+                            price: product.precioVenta,
+                            subtotal: product.precioVenta * quantity,
+                            availableStock: product.stock
+                          };
+                          
+                          setCart([...cart, cartItem]);
+                        }
+                      }
+                    });
+                    
+                    // Reset
+                    setSelectedProductModel(null);
+                    setSelectedTalla(null);
+                    setColorQuantities({});
+                  }}
+                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700"
+                >
+                  Agregar al Carrito
+                </button>
+              </div>
 
               {/* COLUMNA DERECHA: Carrito */}
               <div>
