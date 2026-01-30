@@ -1357,58 +1357,58 @@ doc.autoTable({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-black to-gray-900 rounded-2xl p-8 text-white shadow-xl">
-              <h2 className="text-3xl font-bold mb-2">Bienvenido a ABermud</h2>
-              <p className="text-gray-300">Panel de control sincronizado con Firebase</p>
-            </div>
+            <div className="bg-gradient-to-r from-black to-gray-900 rounded-xl p-4 text-white shadow-md">
+ 			 <h2 className="text-xl font-bold mb-1">Bienvenido a ABermud</h2>
+			  <p className="text-gray-300 text-sm">Panel de control sincronizado con Firebase</p>
+			</div>
 
             <div className="grid grid-cols-4 gap-3 overflow-x-auto">
-              <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200 hover:shadow-xl transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-black rounded-lg">
-                    <Package className="text-white" size={24} />
+              <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+ 				 <div className="flex items-center justify-between mb-2">
+   				  <div className="p-2 bg-black rounded-lg">
+     			   <Package className="text-white" size={20} />
+   			  </div>
+   			 <TrendingUp className="text-green-500" size={16} />
+			  </div>
+			  <p className="text-gray-500 text-xs font-medium mb-1">Productos</p>
+			  <p className="text-2xl font-bold text-black">{stats.totalProducts}</p>
+			  <p className="text-xs text-gray-400 mt-1">{stats.totalStock} unidades totales</p>
+			</div>
+
+              <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-black rounded-lg">
+                    <Users className="text-white" size={20} />
                   </div>
-                  <TrendingUp className="text-green-500" size={20} />
+                  <TrendingUp className="text-green-500" size={16} />
                 </div>
-                <p className="text-gray-500 text-sm font-medium mb-1">Productos</p>
-                <p className="text-3xl font-bold text-black">{stats.totalProducts}</p>
-                <p className="text-xs text-gray-400 mt-2">{stats.totalStock} unidades totales</p>
+                <p className="text-gray-500 text-xs font-medium mb-1">Clientes</p>
+                <p className="text-2xl font-bold text-black">{stats.totalClients}</p>
+                <p className="text-xs text-gray-400 mt-1">Base de clientes</p>
               </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-black rounded-lg">
-                    <Users className="text-white" size={24} />
+              <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-black rounded-lg">
+                    <ShoppingCart className="text-white" size={20} />
                   </div>
-                  <TrendingUp className="text-green-500" size={20} />
+                  <TrendingUp className="text-green-500" size={16} />
                 </div>
-                <p className="text-gray-500 text-sm font-medium mb-1">Clientes</p>
-                <p className="text-3xl font-bold text-black">{stats.totalClients}</p>
-                <p className="text-xs text-gray-400 mt-2">Base de clientes</p>
+                <p className="text-gray-500 text-xs font-medium mb-1">Ventas</p>
+                <p className="text-2xl font-bold text-black">{stats.totalSales}</p>
+                <p className="text-xs text-gray-400 mt-1">Total de transacciones</p>
               </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-black rounded-lg">
-                    <ShoppingCart className="text-white" size={24} />
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <DollarSign className="text-white" size={20} />
                   </div>
-                  <TrendingUp className="text-green-500" size={20} />
+                  <TrendingUp className="text-white" size={16} />
                 </div>
-                <p className="text-gray-500 text-sm font-medium mb-1">Ventas</p>
-                <p className="text-3xl font-bold text-black">{stats.totalSales}</p>
-                <p className="text-xs text-gray-400 mt-2">Total de transacciones</p>
-              </div>
-
-              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 shadow-md hover:shadow-xl transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-white/20 rounded-lg">
-                    <DollarSign className="text-white" size={24} />
-                  </div>
-                  <TrendingUp className="text-white" size={20} />
-                </div>
-                <p className="text-emerald-100 text-sm font-medium mb-1">Ingresos del Día</p>
-                <p className="text-3xl font-bold text-white">S/ {stats.todayRevenue.toFixed(2)}</p>
-                <p className="text-xs text-emerald-100 mt-2">Ventas de hoy</p>
+                <p className="text-emerald-100 text-xs font-medium mb-1">Ingresos del Día</p>
+                <p className="text-2xl font-bold text-white">S/ {stats.todayRevenue.toFixed(2)}</p>
+                <p className="text-xs text-emerald-100 mt-1">Ventas de hoy</p>
               </div>
             </div>
 
@@ -1480,7 +1480,19 @@ doc.autoTable({
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {sales.slice(0, 5).map(sale => (
+                    {(() => {
+					  const today = new Date().toISOString().split('T')[0];
+					  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  
+					  // Primero intentar ventas de hoy
+ 					 let recentSales = sales.filter(s => s.date === today);
+  
+					  // Si no hay de hoy, mostrar de ayer
+				     if (recentSales.length === 0) {
+ 					   recentSales = sales.filter(s => s.date === yesterday);
+				     }
+  
+				     return recentSales.slice(0, 5).map(sale => (
                       <div key={sale.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                         <div className="flex-1">
                           <p className="font-medium text-black">{sale.clientName}</p>
@@ -1498,7 +1510,8 @@ doc.autoTable({
                           </button>
                         </div>
                       </div>
-                    ))}
+                   ));
+				   })()} 
                   </div>
                 )}
               </div>
