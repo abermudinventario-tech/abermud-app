@@ -3250,11 +3250,7 @@ doc.autoTable({
                 </button>
               </div>  
 
-			  </div>	  
-            </div>  
-          )}
-
-              {/* COLUMNA DERECHA: Carrito */}
+			  {/* COLUMNA DERECHA: Carrito */}
               <div>
                 <h3 className="font-bold mb-3 text-base">Carrito</h3>
                 
