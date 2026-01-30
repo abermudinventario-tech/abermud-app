@@ -340,26 +340,37 @@ function App() {
     }
 
     try {
-      const docRef = await addDoc(collection(db, 'clients'), {
-        nombre: newClient.nombre,
-        dni: newClient.dni,
-        telefono: newClient.telefono,
-        direccion: newClient.direccion,
-        createdAt: serverTimestamp()
-      });
+    // ========== VALIDAR DNI DUPLICADO ==========
+    const dniQuery = query(
+      collection(db, 'clients'),
+      where('dni', '==', newClient.dni)
+    );
+    const dniSnapshot = await getDocs(dniQuery);
+    
+    if (!dniSnapshot.empty) {
+      const existingClient = dniSnapshot.docs[0].data();
+      alert(`⚠️ Cliente ya registrado con DNI ${newClient.dni}\n\nNombre: ${existingClient.nombre}`);
+      return;
+    }
+      // ==========================================
 
+    const docRef = await addDoc(collection(db, 'clients'), {
+      nombre: newClient.nombre,
+      dni: newClient.dni,
+      telefono: newClient.telefono,
+      direccion: newClient.direccion,
+      createdAt: serverTimestamp()
+    });
+      
       const newClientData = {
         id: docRef.id,
         ...newClient
-      };
-
-      setSelectedClient(newClientData);
-      setClientSearch(newClient.nombre);
-      setNewClient({ nombre: '', dni: '', telefono: '', direccion: '' });
-      setShowAddClient(false);
-      setShowCreateClient(false);
+    };
+		
+	setNewClient({ nombre: '', dni: '', telefono: '', direccion: '' });
+    setShowAddClient(false);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error al agregar cliente:', error);
       alert('Error al agregar cliente');
     }
   };
