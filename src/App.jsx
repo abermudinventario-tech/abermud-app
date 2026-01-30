@@ -3248,7 +3248,11 @@ doc.autoTable({
                 >
                   Agregar al Carrito
                 </button>
-              </div>
+              </div>  
+
+			  </div>	  
+            </div>  
+          )}
 
               {/* COLUMNA DERECHA: Carrito */}
               <div>
