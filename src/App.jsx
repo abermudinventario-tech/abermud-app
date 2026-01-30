@@ -1362,8 +1362,8 @@ doc.autoTable({
               <p className="text-gray-300">Panel de control sincronizado con Firebase</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 hover:shadow-xl transition-shadow">
+            <div className="grid grid-cols-4 gap-3 overflow-x-auto">
+              <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200 hover:shadow-xl transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-black rounded-lg">
                     <Package className="text-white" size={24} />
