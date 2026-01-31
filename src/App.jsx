@@ -3427,7 +3427,7 @@ doc.autoTable({
                 </div>
               </div>
             </div>
-          )}	            
+          )}          
 
     {/* MODAL: Ver Venta */}
       {viewingSale && (
