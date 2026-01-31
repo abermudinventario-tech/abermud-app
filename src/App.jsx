@@ -3424,8 +3424,6 @@ doc.autoTable({
                   <div className="text-center py-8 bg-gray-50 rounded-lg border">
                     <p className="text-gray-500 text-sm">Carrito vacío</p>
                   </div>
-                )}
-             	  </div>
 	            </div>
        	      </div>
        	    </div>
