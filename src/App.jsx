@@ -3425,11 +3425,11 @@ doc.autoTable({
                     <p className="text-gray-500 text-sm">Carrito vacío</p>
                   </div>
                 )}
-              </div>
-            </div>
-          </div>
-        </div>
-    )}
+             	  </div>
+	            </div>
+       	      </div>
+       	    </div>
+   	  	  )}
 
     {/* MODAL: Ver Venta */}
       {viewingSale && (
